@@ -1,0 +1,133 @@
+mod PROP is
+  sorts Variable Prop .
+  subsort Variable < Prop .                   *** Prop ::= Variable
+
+  ops p q r p1 q1 r1 p2 q2 r2 : -> Variable . *** Variable ::= p | q | r ...
+
+  ops True False : -> Prop .                  *** Prop ::= True | False
+
+  op ~_ : Prop -> Prop .                      *** Prop ::= ~ Prop
+  op _\/_ : Prop Prop -> Prop .               *** Prop ::= Prop \/ Prop
+  op _/\_ : Prop Prop -> Prop .               *** Prop ::= Prop \/ Prop
+  op _==>_ : Prop Prop -> Prop .              *** Prop ::= Prop \/ Prop
+
+
+  *** Bags (soups) of propositions
+  sort Props .
+  subsort Prop < Props . 
+  op _,_ : Props Props -> Props [assoc comm] .
+
+  *** A kind of sets of propositions
+  sort PropSet .
+  op empty : -> PropSet .
+  op {_} : Props -> PropSet .
+
+  *** Entailment relation SP |- \phi
+  *** SP |- \phi is a theorem if SP |- \phi =>* thm 
+  sort Thm? .
+  ops thm unknwn : -> Thm? .
+  op _|-_ : PropSet Prop -> Thm? .
+
+
+
+  vars P Q R : Prop .
+  var PS : PropSet . 
+  var Ps : Props .
+
+  ***(
+    --------- (unit)
+     |- True
+  ***)
+  rl PS |- True => thm .
+
+  ***(
+     |- P, |- Q
+    ------------ (/\-intro)
+     |- P /\ Q
+  ***)
+ crl PS |- (P /\ Q) => thm
+   if (PS |- P) => thm
+   /\ (PS |- Q) => thm .
+  
+  ***(
+       |- P
+    ----------- (\/-intro-left)
+     |- P \/ Q
+  ***)
+ crl PS |- (P \/ Q) => thm
+   if (PS |- P) => thm .
+
+  ***(
+       |- Q
+    ----------- (\/-intro-right)
+     |- P \/ Q
+  ***)
+ crl PS |- (P \/ Q) => thm
+   if (PS |- Q) => thm .
+   
+ crl {~ P, Ps} |- False => thm
+   if ({Ps} |- P) => thm .
+   
+ crl {P, Ps} |- False => thm
+   if ({Ps} |- ~ P) => thm .
+
+  ***(
+         |- ~ P
+    ---------------- (~-intro)
+     |- P ==> False
+  ***)
+  rl {~ P} |- (P ==> False) => thm .
+
+  ***(
+       |- P, |- P ==> Q
+    -------------------- (modus-ponens)
+           |- Q
+  ***)
+  rl {P, (P ==> Q)} |- Q => thm .
+
+  *** the next rule, if uncommented, produce nonterminating rewriting
+(
+ crl {Ps} |- Q => thm
+   if {Ps, ~ Q} |- False => thm .
+)
+
+  ***(
+    --------- (assum)
+     P |- P
+  ***)
+  rl { P, Ps } |- P => thm . 
+  rl { P } |- P => thm . 
+endm
+
+search {~(~ P \/ ~ Q), ~ P} |- False =>* thm .
+
+*** Solution 1 (state 1)
+***(
+  There is a solution, this means that there is a proof tree
+  witnessing {~(~ P \/ ~ Q), ~ P} |- False.
+  Applying RAA, we get {~(~ P \/ ~ Q)} |- P.
+***)
+
+
+search {~(~ P \/ ~ Q), ~ Q} |- False =>* thm .
+
+*** Solution 1 (state 1) 
+***(
+  There is a solution, this means that there is a proof tree
+  witnessing {~(~ P \/ ~ Q), ~ Q} |- False.
+  Applying RAA, we get {~(~ P \/ ~ Q)} |- Q.
+***)
+
+mod RAA1 is
+  including PROP .
+  
+  vars P Q R : Prop .
+  var PS : PropSet . 
+  var Ps : Props .
+  *** add the lemmata proved above
+  rl {~(~ P \/ ~ Q)} |- P => thm . 
+  rl {~(~ P \/ ~ Q)} |- Q => thm .
+
+endm
+
+search {~(P /\ Q), ~(~ P \/ ~ Q)} |- False =>* thm .
