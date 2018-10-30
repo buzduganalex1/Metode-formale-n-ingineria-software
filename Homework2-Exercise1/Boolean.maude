@@ -1,0 +1,19 @@
+fmod BOOLEAN is
+        sort Boolean .
+
+        op true : -> Boolean [ctor] .
+        op false : -> Boolean [ctor] .
+
+        op not : Boolean -> Boolean .
+        op _and_ : Boolean Boolean -> Boolean .
+        op _or_ : Boolean Boolean -> Boolean .
+
+        var A : Boolean .
+
+        eq not(true) = false .
+        eq not(false) = true .
+        eq true and A = A .
+        eq false and A = false .
+        eq true or A = true .
+        eq false or A = A .
+endfm

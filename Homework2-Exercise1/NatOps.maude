@@ -1,0 +1,53 @@
+fmod BASIC-NAT is
+        sort Nat .
+
+        op 0 : -> Nat .
+        op s : Nat -> Nat .
+        op _+_ : Nat Nat -> Nat .
+
+        vars N M : Nat .
+
+        eq 0 + N = N .
+        eq s(M) + N = s(M + N) .
+endfm
+
+
+fmod BOOLEAN is
+        sort Boolean .
+
+        op true : -> Boolean [ctor] .
+        op false : -> Boolean [ctor] .
+
+        op not : Boolean -> Boolean .
+        op _and_ : Boolean Boolean -> Boolean .
+        op _or_ : Boolean Boolean -> Boolean .
+
+        var A : Boolean .
+
+        eq not true = false .
+        eq not false = true .
+        eq true and A = A .
+        eq false and A = false .
+        eq true or A = true .
+        eq false or A = A .
+endfm
+
+fmod NAT+OPS is
+        protecting BOOLEAN .
+        protecting BASIC-NAT .
+
+        ops _*_ _-_ : Nat Nat -> Nat .
+        ops _<=_ _>_ : Nat Nat -> Boolean .
+
+        vars N M : Nat .
+
+        eq 0 * N = 0 .
+        eq s(M) * N = (M * N) + N .
+        eq 0 - N = 0 .
+        eq s(M) - 0 = s(M) .
+        eq s(M) - s(N) = M - N .
+        eq 0 <= N = true .
+        eq s(M) <= 0 = false .
+        eq s(M) <= s(N) = M <= N .
+        eq M > N = not(M <= N) .
+endfm
