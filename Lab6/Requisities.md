@@ -54,3 +54,57 @@ P3x :
     if(x<0)
         a = -a
     (| a^3 <= x < (a+1)^3 |)
+    (| R? |)
+aplicand regula pentru comp., ar trebui sa aratam:
+
+---
+    |- (| true |)
+    if(x < 0)
+        x1 = -x else x1 = x;
+    a=0;
+    while((a+1)*(a+1)*(a+1) <= a)
+        a = a + 1;
+    (| a^3 <= x < (a+1)^3 |)
+
+    R? := wlp(if(x<0) a = -a;, Q)
+    wlp(if (x<0)) a = -a;, Q) =
+    wlp(if(x<0)) a = -a; else {}, Q) = 
+    x < 0 ==> wlp(a = -a;, Q) /\ x >= 0 ==> wlp({}, Q) =
+
+    x < 0 ==> -a*a*a <= x < (-a+1)*(-a+1)*(-a+1) /\ x >= 0 ==> Q
+    R? := x < 0 ==> -a*a*a <= x < (-a+1)*(-a+1)*(-a+1) /\ x >= 0 ==> Q
+    Notam R? cu Q1
+
+     |- (| true |)
+    if(x < 0)
+        x1 = -x else x1 = x;
+    a=0;
+    while((a+1)*(a+1)*(a+1) <= a)
+        a = a + 1;
+    (| Q1 |)
+    Incercam sa dovedim
+
+    |- (| INV |)
+    while((a+1)*(a+1)*(a+1) <= a)
+       a = a + 1;
+    
+    Ca sa putem aplica regula de impl trebuie sa avem
+
+    INV  /\ (a+1)*(a+1)*(a+1) > x1 ==> Q1
+
+    adica
+
+    INV  /\ (a+1)*(a+1)*(a+1) > x1 ==>
+                                x < 0 ==> -a*a*a <= x < (-a+1)*(-a+1)*(-a+1) /\
+                                x >= 0 ==> a*a*a <= x < (a+1)*(a+1)*(a+1)
+
+    INV :=  x < 0 ==> x1 = -x /\ x > = 0 x1 = x /\
+            (x >= 0 ==> x1 = x /\ a*a*a <= x)
+    (a+1)*(a+1)*(a+1) > x1 /\ x < 0 ==> x1 = -x
+    ==>
+    x < (-a+1)*(-a+1)*(-a+1)
+
+    -x1 < (-a+1)*(-a+1)*(-a+1)
+    =
+    -x1 < -(a-1)*(a-1)*(a-1)
+---
