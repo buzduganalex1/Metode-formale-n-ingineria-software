@@ -27,12 +27,16 @@ mod CINK-SYNTAX is protecting PL-INT + PL-BOOL + PL-ID .
     op _*_ : Exp  Exp -> Exp [gather (E e) prec 33 format (d s s d)] .
     *** Exp ::= Exp / Exp
     op _/_ : Exp  Exp -> Exp [gather (E e) prec 33 format (d s s d)] .
+    *** Exp ::= Exp % Exp
+    op _%_ : Exp  Exp -> Exp [gather (E e) prec 33 format (d s s d)] .
     *** Exp ::= Exp == Exp
     op _==_ : Exp  Exp -> Exp [prec 37 format (d s s d)] .
     *** Exp ::= Exp != Exp
     op _!=_ : Exp  Exp -> Exp [prec 37 format (d s s d)] . 
     *** Exp ::= Exp <= Exp
     op _<=_ : Exp  Exp -> Exp [prec 37 format (d s s d)] . 
+    *** Exp ::= Exp < Exp
+    op _>_ : Exp  Exp -> Exp [prec 37 format (d s s d)] . 
     *** Exp ::= ! Exp
     op !_ :  Exp -> Exp .
     *** Exp ::= Exp && Exp
