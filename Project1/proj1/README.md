@@ -2,7 +2,7 @@
 
 For using z3 follow https://rise4fun.com/z3/tutorial 
 
-### 1.
+### Exxercise 1
 ##### 1.   
 ``` 
     The precondition is that n has to be an integer and > 1
