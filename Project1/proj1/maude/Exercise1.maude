@@ -5,7 +5,7 @@ in tableaux.maude
 mod CINK-PROGRAMS is including CINK-SYNTAX .
 
  ops exercise1 primality : -> Id .
- ops exercise1 primality : -> Stmt .
+ ops exercise1 primality : -> StmtList .
 
  eq exercise1 =
     int primality ( int n )
@@ -27,5 +27,5 @@ mod CINK-PROGRAMS is including CINK-SYNTAX .
      printf("%d;", m) ;
     }
    .
-
+   
 endm
