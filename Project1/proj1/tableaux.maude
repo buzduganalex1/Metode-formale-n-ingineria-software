@@ -1,0 +1,124 @@
+in ../pl-builtins.maude
+in ../cink-syntax.maude
+
+mod TABLEAUX is
+  including CINK-SYNTAX + BOOL .
+
+  sort Assert .
+  subsort Exp < Assert .  *** to be completed
+  op _\implies_ : Assert Assert -> Assert .
+  op _\and_ : Assert Assert -> Assert .
+  op \not_ : Assert -> Assert .
+  op \forall_._ : Id Assert -> Assert .
+
+***(
+  sort List{Assert} .
+  subsort Assert List{Bottom} < List{Assert} .
+  op _,_ : List{Assert} List{Assert} -> List{Assert} [ditto] .
+***)
+
+  *** replacement A[E/X]
+  op _[_/_] : Assert Exp Id -> Assert [prec 51]  .
+  vars X Y : Id .
+  vars E E' E1 E2 E1' E2' : Exp .
+  vars P P' Q Q' P1 P2 Q1 Q2 INV : Assert .
+  var I : PLInt .
+  
+  eq I [ E / X ] = I .
+  eq X [ E / X ] = E .
+  ceq Y [ E / X ] = Y  if (X =/= Y) .
+  eq (E1 + E2)[ E / X ] = (E1 [ E / X ]) + (E2 [ E / X ]) . 
+  eq (E1 - E2)[ E / X ] = (E1 [ E / X ]) - (E2 [ E / X ]) . 
+  eq (E1 * E2)[ E / X ] = (E1 [ E / X ]) * (E2 [ E / X ]) . 
+  eq (E1 / E2)[ E / X ] = (E1 [ E / X ]) / (E2 [ E / X ]) . 
+  eq (E1 = E2)[ E / X ] = (E1 [ E / X ]) = (E2 [ E / X ]) .
+  eq (E1 == E2)[ E / X ] = (E1 [ E / X ]) == (E2 [ E / X ]) . 
+  eq (E1 != E2)[ E / X ] = (E1 [ E / X ]) != (E2 [ E / X ]) . 
+  eq (E1 <= E2)[ E / X ] = (E1 [ E / X ]) <= (E2 [ E / X ]) . 
+  eq (! E')[ E / X ] = !(E' [ E / X ]) . 
+  eq (E1 || E2)[ E / X ] = (E1 [ E / X ]) || (E2 [ E / X ]) . 
+  eq (E1 && E2)[ E / X ] = (E1 [ E / X ]) && (E2 [ E / X ]) .
+  eq (P \and Q)[ E / X ] = (P [ E / X ]) \and (Q [ E / X ]) .
+  eq (P \implies Q)[ E / X ] = (P [ E / X ]) \implies (Q [ E / X ]) .
+  eq (\not P)[ E / X ] = \not (P [ E / X ]) .
+ ceq (\forall Y . P)[ E / X ] = \forall Y . (P [ E / X ])  if (X =/= Y) .
+  eq (\forall X . P)[ E / X ] = \forall X . P .
+
+  *** extending the language with invariants specification
+  op inv : Assert -> Exp [format (n b)] .
+
+  *** proof tableaux
+  sort ProofTableaux .
+  subsort StmtList < ProofTableaux .
+  op {_} : ProofTableaux -> ProofTableaux [ditto] .
+  op if(_)_else_ :  Exp  ProofTableaux  ProofTableaux -> ProofTableaux [ditto] .
+  op while(_)_ :  Exp  ProofTableaux -> ProofTableaux [ditto] .
+  op __ : ProofTableaux ProofTableaux -> ProofTableaux [ditto] .
+  
+  op `(|_|`) : Assert -> Stmt [format (b b n++i bn--i o o)] .
+  
+  *** extending the statements with annotations
+  sort Annotation .
+  op implied : -> Annotation .
+  op assign : -> Annotation .
+  op if : -> Annotation .
+  op while : -> Annotation .
+  op seq : -> Annotation .
+
+  op _[_] : Stmt Annotation -> ProofTableaux [format (d tr r r o)] .
+
+ 
+  vars S S' S1 S2 : Stmt .
+  vars Ss Ss' Ss1 Ss2 : StmtList .
+  vars PT PT' PT1 PT2 : ProofTableaux .
+  var ANN : Annotation .
+
+  *** an auxiliary function, returning the precondition of a tableaux
+  op pre : ProofTableaux -> Assert .
+  
+  eq pre( (| Q |) ) = Q .
+  eq pre(( (| Q |) PT )) = Q .
+  eq pre(( (| Q |) [ANN] PT )) = Q .
+
+ *** statements & postconditions to proof tableaux algorithm
+  op 2pt : StmtList Assert -> ProofTableaux .
+
+ ceq 2pt((Ss S), Q) = 2pt(Ss, P') PT'
+    if (| P' |) PT' := 2pt(S , Q) .
+   
+  eq 2pt({ Ss }, Q) = { 2pt(Ss, Q) } .
+  
+  eq 2pt({}, Q) = (| Q |) {} (| Q |) .
+
+  eq 2pt(X = E ; ,  Q ) = (| Q [ E / X ] |) X = E ; (| Q |) [ assign ] .
+
+ ceq 2pt((if (E) S else S' ), Q)  =
+     (| (E \implies pre(PT)) \and (\not E \implies pre(PT')) |)
+     (if (E) { PT } else { PT' })
+     (| Q |) [if]
+  if PT := 2pt(S, Q) /\
+     PT' := 2pt(S', Q) .
+
+ ceq 2pt(while (E) { inv(INV) ; Ss }, Q)  =
+     (| INV |)
+     while (E) { (| INV \and E |) (| Q' |) [implied] PT }
+     (| INV \and \not E |) [while]
+     (| Q |) [implied]
+  if (| Q' |) PT := 2pt(Ss, INV) .
+  
+endm
+
+***(
+red 2pt((x = y - 1 ; y = x + 1 ;), (x <= y)) . 
+
+
+red 2pt((x = a ; if (x <= y) x = x + y ; else y = x - y ;), ((x != y) && (0 <= y))) .
+
+red 2pt((x = x + 1 ; while (y <= x) {inv( 0 <= x); x = x - y ;}), (x - y <= 0)) .
+***)
+
+*** red 2pt((s = 0 ; i = 1 ; while (i <= n) { inv((i <= n + 1) && (s == ((i - 1) * i / 2))); s = s + i ; i = i + 1 ; }), s == (n * (n + 1) / 2) ) .
+
+red 2pt({ x = y - 1 ; y = x + 1 ; }, (x <= y)) .
+
+red 2pt((if (x <= 0) s = x ; else {}), (0 <= x)) .

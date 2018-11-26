@@ -1,0 +1,26 @@
+mod INTARRAY is
+  protecting PL-INT + BOOL .
+
+  sort IntArray .
+  op zeros : -> IntArray .
+  op sel : IntArray PLInt -> PLInt .
+  op update : IntArray PLInt PLInt -> IntArray .
+
+  var A : IntArray .
+  vars I J V V' : PLInt .
+
+  eq sel(zeros, I) = 0 .
+ ceq sel(update(A, I, V), J) = V if I == J . 
+ ceq sel(update(A, I, V), J) = sel(A, J) if I =/= J .
+ ceq update(update(A, I, V), J, V') = update(update(A, J, V'), I, V) if I >Int J == true . 
+ ceq update(update(A, I, V), J, V') = update(A, J, V') if J == I .
+endm
+
+red sel(zeros, 3) .
+red update(update(zeros, 2, 22), 3, 33) . 
+red update(update(zeros, 3, 33), 2, 22) . 
+red update(update(update(zeros, 2, 22), 3, 33), 2, 222) .
+
+red sel(update(update(zeros, 2, 22), 3, 33), 3) . 
+red sel(update(update(zeros, 3, 33), 2, 22), 2) . 
+red sel(update(update(update(zeros, 2, 22), 3, 33), 2, 222), 2) .

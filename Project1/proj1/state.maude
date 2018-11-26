@@ -1,0 +1,15 @@
+mod STATE is including PL-INT + PL-ID .
+  sort State .
+  op _|->_ : List{Id} PLInt -> State [prec 0] .
+  op .State : -> State .
+  op _&_ : State State -> State [assoc comm id: .State format(d s s d)] .
+  op _(_) : State Id -> [PLInt] [prec 0] .        --- lookup
+  op _[_/_] : State PLInt Id -> State [prec 0] .  --- update
+
+  var Sigma : State .  var X X' : Id .  var Xl : List{Id} .  var I I' : PLInt .
+
+  eq (Sigma & X |-> I)(X) = I .
+  eq (Sigma &  X |-> I)[I' / X ] = (Sigma & X |-> I') .
+  eq (X,X',Xl) |-> I = X |-> I & X' |-> I & Xl |-> I .
+  eq .List |-> I = .State .
+endm

@@ -1,0 +1,107 @@
+mod CINK-SYNTAX is protecting PL-INT + PL-BOOL + PL-ID .
+
+    sort DeclId .
+    *** DeclId ::= int Exp
+    op int_  :  Exp -> DeclId [prec 40] .
+    *** DeclId ::= bool Exp
+    op bool_ :  Exp -> DeclId [prec 40] .
+    *** DeclId ::= void Exp
+    op void_ :  Id  -> DeclId [prec 40] .
+    
+    sort Value .
+    *** Value ::= PLBool | PLInt
+    subsort PLBool PLInt < Value .
+
+    sort Exp .
+    *** Exp ::= Value
+    subsort Value <  Exp .
+    *** Exp ::= Id 
+    subsort Id <  Exp .
+    *** Exp ::= DeclId
+    subsort DeclId <  Exp .
+    *** Exp ::= Exp + Exp
+    op _+_ : Exp  Exp -> Exp [gather (E e) prec 33 format (d s s d)] .
+    *** Exp ::= Exp - Exp
+    op _-_ : Exp  Exp -> Exp [gather (E e) prec 33 format (d s s d)] .
+    *** Exp ::= Exp * Exp
+    op _*_ : Exp  Exp -> Exp [gather (E e) prec 33 format (d s s d)] .
+    *** Exp ::= Exp / Exp
+    op _/_ : Exp  Exp -> Exp [gather (E e) prec 33 format (d s s d)] .
+    *** Exp ::= Exp == Exp
+    op _==_ : Exp  Exp -> Exp [prec 37 format (d s s d)] .
+    *** Exp ::= Exp != Exp
+    op _!=_ : Exp  Exp -> Exp [prec 37 format (d s s d)] . 
+    *** Exp ::= Exp <= Exp
+    op _<=_ : Exp  Exp -> Exp [prec 37 format (d s s d)] . 
+    *** Exp ::= ! Exp
+    op !_ :  Exp -> Exp .
+    *** Exp ::= Exp && Exp
+    op _&&_ : Exp  Exp -> Exp [format (d s s d)] .
+    *** Exp ::= Exp || Exp
+    op _||_ : Exp  Exp -> Exp [format (d s s d)] .
+    *** Exp ::= Exp ? Exp : Exp
+    op _?_:_ : Exp  Exp  Exp -> Exp [prec 39 format (d s s s s d )] . 
+    *** Exp ::= Exp = Exp
+    op _=_ : Exp  Exp -> Exp [ prec 40 gather (e E) format (d s s d)] .
+    *** Exp ::=printf("%d;", Exp)
+    op printf("%d;",_) :  Exp -> Exp . 
+    *** Exp ::=scanf("%d;", & Id)
+    op scanf("%d",&_) :  Id -> Exp .
+    *** Exp ::= Id ( List{Exp} )
+    op _(_) : Id  List{Exp} -> Exp [prec 0 format (d s s s d)] . 
+    *** Exp ::= Id ()
+    op _() : Id -> Exp [prec 0 format (d s s d)] .
+
+    sort Stmt .
+    *** Stmt ::= Exp ;
+    op _; : Exp -> Stmt [prec 45 format (d b o)] .
+    *** Stmt ::= {}
+    op {} :  -> Stmt .
+    *** Stmt ::= { StmtList }
+    op {_} :  StmtList -> Stmt [prec 45 format (b n++i bn--i o)] .
+    *** Stmt ::= if ( Exp ) Stmt
+    op if(_)_ :  Exp  Stmt -> Stmt [prec 47 format (b b o b n++i --o )] .
+    *** Stmt ::= if ( Exp ) Stmt else Stmt
+    op if(_)_else_ :  Exp  Stmt  Stmt -> Stmt [prec 46 format (b b o b n++i bn--i n++i --o)] .
+    *** Stmt ::= while ( Exp ) Stmt
+    op while(_)_ :  Exp  Stmt -> Stmt [prec 47 format (b b o b n++i --o)] .
+    *** Stmt ::= return Exp ;
+    op return_; : Exp -> Stmt [format(b o b o)] .
+    *** Stmt ::= DeclId ( List{DeclId} ) { StmtList }
+    op _(_){_} : DeclId  List{DeclId}  StmtList -> Stmt [format (ni sb o sb sb n++io n--i o)] .
+    *** Stmt ::= DeclId () { StmtList }
+    op _(){_} : DeclId StmtList -> Stmt [format (ni sb sb sb n++io n--i o)] .
+    *** Id ::= main
+    op main :  -> Id . 
+
+    sort StmtList .
+    *** StmtList ::= Stmt
+    subsort Stmt <  StmtList .
+    *** StmtList ::= StmtList StmtList
+    op __ : StmtList  StmtList -> StmtList [prec 100 assoc format (d ni d)] . 
+
+    sort Pgm .
+    *** Pgm ::= StmtList
+    subsort StmtList <  Pgm . 
+
+    --- lists 
+
+   sort List{DeclId} .
+   *** List{DeclId} ::= DeclId
+   *** DeclId ::= Bottom
+   subsort Bottom < DeclId <  List{DeclId} .
+   *** List{DeclId} ::= List{Bottom}
+   subsort List{Bottom} <  List{DeclId} .
+   ***  List{DeclId} ::=  List{DeclId} ,  List{DeclId}
+   op _,_ : List{DeclId}  List{DeclId} -> List{DeclId} [ditto] .
+ 
+   sort List{Exp} .
+   ***  List{Exp} ::= Exp
+   subsort Exp <  List{Exp} .
+   ***  List{Exp} ::=  List{Id}
+   subsort List{Id} <  List{Exp} .
+   ***  List{Exp} ::= List{DeclId}
+   subsort List{DeclId} <  List{Exp} .
+   ***  List{Exp} ::=  List{Exp} ,  List{Exp}
+   op _,_ : List{Exp}  List{Exp} -> List{Exp} [ditto] . 
+endm

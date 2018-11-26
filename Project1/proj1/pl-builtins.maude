@@ -1,0 +1,149 @@
+--- This module contains several builtins that we will include in the CINK language.
+--- It is preferable to run maude with the flag -no-prelude, so that no warnings will be issued for
+---   redefining the sorts in modules BOOL and INT (which maude's prelude includes by default).
+
+
+set include BOOL off .   
+set include BOOLEAN off .
+
+fmod UNDEFINED is
+  sort Undefined .
+  op undefined : -> Undefined .   *** for, e.g., noninitialized variables
+endfm
+
+--- The module below includes the builtin booleans to be used as "library" for various languages
+--- The special operation attributes link those operations to builtin Maude library functions.
+
+fmod PL-BOOL is including UNDEFINED .
+  sort PLBool .  subsort Undefined < PLBool .
+  op true : -> PLBool [ctor] . *** [ctor special (id-hook SystemTrue)] .
+  op false : -> PLBool [ctor] . *** [ctor special (id-hook SystemFalse)] .
+  op _==Bool_ : PLBool PLBool -> PLBool [ctor prec 51] .
+  op _=/=Bool_ : PLBool PLBool -> PLBool [ctor prec 51] .
+  op _andBool_ : PLBool PLBool -> PLBool [assoc comm prec 55] .
+  op _orBool_ : PLBool PLBool -> PLBool [assoc comm prec 59] .
+  op _xorBool_ : PLBool PLBool -> PLBool [assoc comm prec 57] .
+  op notBool_ : PLBool -> PLBool [prec 53] .
+  op _impliesBool_ : PLBool PLBool -> PLBool [gather (e E) prec 61] .
+  vars A B C : PLBool .
+  eq true andBool A = A .
+  eq false andBool A = false .
+  eq A andBool A = A .
+  eq false xorBool A = A .
+  eq A xorBool A = false .
+  eq A andBool (B xorBool C) = A andBool B xorBool A andBool C .
+  *** eq notBool A = A xorBool true .
+  eq notBool true = false .
+  eq notBool false = true .
+  *** eq A orBool B = A andBool B xorBool A xorBool B .
+  eq A orBool true = true .
+  eq A orBool false = A .
+  eq notBool(A orBool B) = notBool A andBool notBool B .
+  eq notBool(A andBool B) = notBool A orBool notBool B .
+  eq notBool(notBool(B)) = B .
+  eq A impliesBool B = notBool(A xorBool A andBool B) .
+
+  eq undefined andBool A = undefined .
+  eq undefined xorBool A = undefined .
+  
+  eq B ==Bool B = true .
+  eq A ==Bool B = false [owise].
+  eq A =/=Bool B = notBool (A ==Bool B) .
+
+  *** simplification rules
+  eq B andBool true = B .
+  eq B andBool B = B .
+endfm
+
+--- Like the module PL-BOOL above, the module below defines a minimal part of the Maude builtin integers.
+--- The special operation attributes links those operations to builtin library functions.
+--- Note that we appended an "Int" to each builtin integer operation, so that they will not colide with
+---   homonymous operations in the defined programming language
+
+mod PL-INT is including PL-BOOL .
+***(
+  TBD : rename the operations in a more algorithmic way: MUL ADD DIV .
+***)
+  sort PLInt .  subsort Undefined < PLInt .
+  op 0 : -> PLInt [ctor] .
+  op sInt_ : PLInt -> PLInt [iter ctor special (id-hook SuccSymbol  term-hook zeroTerm (0))] .
+  op -Int_ : PLInt -> PLInt [ctor special (
+    id-hook MinusSymbol  op-hook succSymbol (sInt_ : PLInt ~> PLInt)  op-hook minusSymbol (-Int_ : PLInt ~> PLInt))] .
+  op _+Int_ : PLInt PLInt -> PLInt [assoc comm prec 33 special (
+    id-hook ACU_NumberOpSymbol (+)  op-hook succSymbol (sInt_ : PLInt ~> PLInt)  op-hook minusSymbol (-Int_ : PLInt ~> PLInt))] .
+  op _*Int_ : PLInt PLInt -> PLInt [assoc comm prec 31 special (
+    id-hook ACU_NumberOpSymbol (*)  op-hook succSymbol (sInt_ : PLInt ~> PLInt)  op-hook minusSymbol (-Int_ : PLInt ~> PLInt))] .
+  op _-Int_ : PLInt PLInt -> PLInt [prec 33 gather (E e) special (
+    id-hook NumberOpSymbol (-)  op-hook succSymbol (sInt_ : PLInt ~> PLInt)  op-hook minusSymbol (-Int_ : PLInt ~> PLInt))] .
+  op _/Int_ : PLInt PLInt -> PLInt [prec 31 gather (E e) special (
+    id-hook NumberOpSymbol (quo)  op-hook succSymbol (sInt_ : PLInt ~> PLInt))] .
+  op _<=Int_ : PLInt PLInt -> PLBool [prec 37 special (
+    id-hook NumberOpSymbol (<=)  op-hook succSymbol (sInt_ : PLInt ~> PLInt)  op-hook minusSymbol (-Int_ : PLInt ~> PLInt)
+    term-hook trueTerm (true)  term-hook falseTerm (false))] .
+  op _>Int_ : PLInt PLInt -> PLBool [prec 37 special (
+    id-hook NumberOpSymbol (>)  op-hook succSymbol (sInt_ : PLInt ~> PLInt)  op-hook minusSymbol (-Int_ : PLInt ~> PLInt)
+    term-hook trueTerm (true)  term-hook falseTerm (false))] .
+  op _==Int_ : PLInt PLInt -> PLBool [prec 37] .
+  op _=/=Int_ : PLInt PLInt -> PLBool [prec 37] .
+  op _?Int_:Int_ : PLBool PLInt PLInt -> PLInt [prec 39] .
+
+  vars I I1 I2 : PLInt .
+  var B : PLBool .
+  eq sInt undefined = undefined .
+  eq -Int undefined = undefined .
+  eq undefined +Int I = undefined .
+  eq undefined *Int I = undefined .
+  eq undefined -Int I = undefined .
+  eq I -Int undefined = undefined .
+  eq undefined /Int I = undefined .
+  eq I /Int undefined = undefined .
+  eq undefined <=Int I = undefined .
+  eq I <=Int undefined = undefined .
+  eq undefined >Int I = undefined .
+  eq I >Int undefined = undefined .
+  eq I ==Int I = true .
+  eq I1 ==Int I2 = false [owise].
+  eq I1 =/=Int I2 = notBool (I1 ==Int I2) .
+  eq true ?Int I1 :Int I2 = I1 .
+  eq false ?Int I1 :Int I2 = I2 .
+
+  eq I -Int I1 -Int I2 = I -Int (I1 +Int I2) .
+endm
+
+
+--- The module below defines variable identifiers.
+--- We manually include all the one-lower-case-letter identifiers as constants.
+--- One should make sure that one does not use one-lower-case-letter identifiers
+--- as variables in definitions; otherwise one may get ambiguous parsing errors.
+--- In addition to those, we also included all the Maude builtin quoted identifiers ('a, 'b7, etc.)
+--- We also include sets of variable identifiers; they are useful for declaring blocks of variabiles
+
+mod BOTTOM is including UNDEFINED .
+   sort Bottom .
+   subsort Bottom < Undefined .
+   sort List{Bottom} .
+   op .List :  -> List{Bottom} .
+   subsort Bottom <  List{Bottom} .
+   op _,_ : List{Bottom}  List{Bottom} -> List{Bottom}
+            [assoc id: .List   prec 45] .
+	    
+  sorts NeSet{Bottom} Set{Bottom} .
+  op .Set : -> Set{Bottom} .
+  subsort Bottom < NeSet{Bottom} < Set{Bottom} .
+  
+  op _::_ : Set{Bottom} Set{Bottom} -> Set{Bottom} [assoc comm id: .Set format (d r os d) prec 45] .
+  op _::_ : NeSet{Bottom} Set{Bottom} -> NeSet{Bottom} [ditto] .
+endm
+
+
+mod PL-ID is protecting BOTTOM + UNDEFINED .
+  sort Id .  subsort Undefined < Id .
+  ops a b c d e f g h i j k l m n o p q r s t u v w x y z : -> Id [format (g o)] .
+  op <Qids> : -> Id [special (id-hook QuotedIdentifierSymbol)] .
+
+  sort List{Id} .
+  subsort Id List{Bottom} < List{Id} .
+  op _,_ : List{Id} List{Id} -> List{Id} [ditto] .
+
+endm
+
