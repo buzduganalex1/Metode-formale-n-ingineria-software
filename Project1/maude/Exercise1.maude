@@ -7,8 +7,23 @@ mod CINK-PROGRAMS is including CINK-SYNTAX .
  ops sumPgm  countPrimesPgm testFunPgm : -> StmtList .
  ops sumStmt primalityStmt : -> Stmt .
  ops sum primality : -> Id .
+ ops test primalityStmt : -> Stmt .
 
- eq 
+ eq test =
+    int primality ( int n )
+    {
+        int m ;
+        m = n + 1 ;
+        int j ;
+        j = 2 ;
+
+        while (m % j != 0 || n % j != 0) {
+            if (j > m / 2) { m = m + 1 ; j = 2 ; } else { j = j + 1 ; }
+        }
+        return m ;
+    }
+   .
+
  eq sumStmt = 
    int n ;
    int s ;
