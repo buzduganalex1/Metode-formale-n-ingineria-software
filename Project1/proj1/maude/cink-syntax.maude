@@ -4,9 +4,9 @@ mod CINK-SYNTAX is protecting PL-INT + PL-BOOL + PL-ID .
     *** DeclId ::= int Exp
     op int_  :  Exp -> DeclId [prec 40] .
     *** DeclId ::= int a[] Exp
-    op int_[_]  :  Exp  Exp -> DeclId [prec 40] .
+    op int_[_]  :  Exp  Id -> DeclId [prec 40] .
     *** DeclId ::= int a[n] Exp
-    op int_[]  :  Exp -> DeclId [prec 40] .
+    op int_[]  :  Id -> DeclId [prec 40] .
     *** DeclId ::= bool Exp
     op bool_ :  Exp -> DeclId [prec 40] .
     *** DeclId ::= void Exp
@@ -35,6 +35,7 @@ mod CINK-SYNTAX is protecting PL-INT + PL-BOOL + PL-ID .
     op _%_ : Exp  Exp -> Exp [gather (E e) prec 33 format (d s s d)] .
     *** Exp ::= Exp == Exp
     op _==_ : Exp  Exp -> Exp [prec 37 format (d s s d)] .
+    op _[_]==_ : Exp Id Exp -> Exp [prec 37] .
     *** Exp ::= Exp != Exp
     op _!=_ : Exp  Exp -> Exp [prec 37 format (d s s d)] . 
     *** Exp ::= Exp <= Exp
@@ -53,12 +54,11 @@ mod CINK-SYNTAX is protecting PL-INT + PL-BOOL + PL-ID .
     *** Exp ::= Exp = Exp
     op _=_ : Exp  Exp -> Exp [ prec 40 gather (e E) format (d s s d)] .
     *** Exp ::= Exp[] = Exp
-    op _[_]=_ : Exp Exp Exp -> Exp [ prec 40 ] .
-
+    op _[_]=_ : Exp Id Exp -> Exp [ prec 40 ] .
     *** Exp ::= Exp = Exp[]
-    op _=_[_] : Exp Exp Exp -> Exp [ prec 40 ] .
+    op _=_[_] : Exp Exp Id -> Exp [ prec 40 ] .
     *** Exp ::= Exp[] = Exp[]
-    op _[_]=_[_] : Exp Exp Exp Exp -> Exp [ prec 40 ] .
+    op _[_]=_[_] : Exp Id Exp Id -> Exp [ prec 40 ] .
 
     op _[_]=_[_] : Exp Stmt Exp Stmt -> Exp [ prec 40 ] .
 
@@ -85,6 +85,7 @@ mod CINK-SYNTAX is protecting PL-INT + PL-BOOL + PL-ID .
     op scanf("%d",&_) :  Id -> Exp .
     *** Exp ::= Id ( List{Exp} )
     op _(_) : Id  List{Exp} -> Exp [prec 0 format (d s s s d)] . 
+    op _[_]={_} : Exp Id List{Exp} -> Exp [prec 0 ] . 
     *** Exp ::= Id ()
     op _() : Id -> Exp [prec 0 format (d s s d)] .
 

@@ -1,0 +1,32 @@
+in pl-builtins.maude
+in cink-syntax.maude
+
+mod Exercise3 is including CINK-SYNTAX .
+    ops contains0 : -> DeclId .
+    ops example1 : -> Stmt .
+    
+    eq example1 = 
+        int contains0 ( int a[], int j ){
+            int i = 0 ;
+
+            while(i < j){
+                if(a[i] == 0){
+                    printf("%d;", i) ;
+                    return 0 ;
+                }
+
+                i = i + 1 ;
+            }
+
+            return -1 ;
+        }
+
+        void main(){
+            int a[4] = {1, 2, 6, 4, 0} ;
+            int i ;
+            i = contains0(a, 4) ;
+
+            printf("%d;", i) ;
+        }
+        .
+endm
