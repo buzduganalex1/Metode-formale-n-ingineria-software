@@ -1,6 +1,5 @@
 in pl-builtins.maude
 in cink-syntax.maude
-in tableaux.maude
 
 mod Exercise3 is including CINK-SYNTAX .
     ops contains0 : -> DeclId .
