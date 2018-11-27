@@ -67,19 +67,19 @@ For using z3 follow https://rise4fun.com/z3/tutorial
 
     In cink-syntax.maude we added the following operations:
 ```
-    - op int_[_]  :  Exp  Exp -> DeclId [prec 40] .
+    - op int_[_]  :  Exp Id -> DeclId [prec 40] .
 
     - op int_[]  :  Exp -> DeclId [prec 40] .
 
-    - op _[_]=_ : Exp Exp Exp -> Exp [ prec 40 ] .
+    - op _[_]=_ : Exp Id Exp -> Exp [ prec 40 ] .
 
-    - _=_[_] : Exp Exp Exp -> Exp [ prec 40 ] .
+    - _=_[_] : Exp Exp Id -> Exp [ prec 40 ] .
 
-    - op _[_]=_[_] : Exp Exp Exp Exp -> Exp [ prec 40 ] .
+    - op _[_]=_[_] : Exp Id Exp Id -> Exp [ prec 40 ] .
 
     - op _[_]=_[_] : Exp Stmt Exp Stmt -> Exp [ prec 40 ] .
 
-    - op printf("%d;",_[_]) :  Exp Exp -> Exp . 
+    - op printf("%d;",_[_]) :  Exp Id -> Exp . 
 ```
 
 2. In Exercise2 we added 3 examples of operations with arrays.
@@ -137,4 +137,46 @@ For using z3 follow https://rise4fun.com/z3/tutorial
     endm
     ```
 
-### Exxercise 3
+### Exercise 3
+1.
+        
+2.  Exercise 3 solution implemented with the cink changes to support arrays
+    ```
+        in pl-builtins.maude
+        in cink-syntax.maude
+
+        mod Exercise3 is including CINK-SYNTAX .
+            ops contains0 : -> DeclId .
+            ops example1 : -> Stmt .
+            
+            eq example1 = 
+                int contains0 ( int a[], int j ){
+                    int i = 0 ;
+
+                    while(i < j){
+                        if(a[i] == 0){
+                            printf("%d;", i) ;
+                            return 0 ;
+                        }
+
+                        i = i + 1 ;
+                    }
+
+                    return -1 ;
+                }
+
+                void main(){
+                    int a[4] = {1, 2, 6, 4, 0} ;
+                    int i ;
+                    i = contains0(a, 4) ;
+
+                    printf("%d;", i) ;
+                }
+                .
+        endm
+    ```
+
+    The changes to support this were the addition of dynamic allocation operation:
+    ```
+        op _[_]={_} : Exp Id List{Exp} -> Exp [prec 0 ] . 
+    ```

@@ -80,7 +80,7 @@ mod CINK-SYNTAX is protecting PL-INT + PL-BOOL + PL-ID .
     *** Exp ::=printf("%d;", Exp)
     op printf("%d;",_) :  Exp -> Exp . 
     *** Exp ::=printf("%d;", Exp)
-    op printf("%d;",_[_]) :  Exp Exp -> Exp . 
+    op printf("%d;",_[_]) :  Exp Id -> Exp . 
     *** Exp ::=scanf("%d;", & Id)
     op scanf("%d",&_) :  Id -> Exp .
     *** Exp ::= Id ( List{Exp} )
