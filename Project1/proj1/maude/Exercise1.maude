@@ -2,23 +2,26 @@ in pl-builtins.maude
 in cink-syntax.maude
 in tableaux.maude
 
-mod CINK-PROGRAMS is including CINK-SYNTAX .
+mod Exercise1 is including CINK-SYNTAX .
 
- ops exercise1 primality : -> Id .
- ops exercise1 primality : -> StmtList .
+ ops primality : -> DeclId .
+ ops exercise1 : -> Stmt .
 
  eq exercise1 =
     int primality ( int n )
-    {
-        int m ;
-        m = n + 1 ;
-        int i ;
-        i = 2 ;
+    {   
+        if ( n > 1 ) {
+            int m ;
+            m = n + 1 ;
+            int i ;
+            i = 2 ;
 
-        while (m % i != 0 || n % i != 0) {
-            if (i > m / 2) { m = m + 1 ; i = 2 ; } else { i = i + 1 ; }
+            while (m % i != 0 || n % i != 0) {
+                if (i > m / 2) { m = m + 1 ; i = 2 ; } else { i = i + 1 ; }
+            }
+            return m ;
         }
-        return m ;
+        return -1 ;       
     }
 
     void main () {

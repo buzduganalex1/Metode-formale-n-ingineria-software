@@ -3,6 +3,10 @@ mod CINK-SYNTAX is protecting PL-INT + PL-BOOL + PL-ID .
     sort DeclId .
     *** DeclId ::= int Exp
     op int_  :  Exp -> DeclId [prec 40] .
+    *** DeclId ::= int a[] Exp
+    op int_[_]  :  Exp  Exp -> DeclId [prec 40] .
+    *** DeclId ::= int a[n] Exp
+    op int_[]  :  Exp -> DeclId [prec 40] .
     *** DeclId ::= bool Exp
     op bool_ :  Exp -> DeclId [prec 40] .
     *** DeclId ::= void Exp
@@ -37,6 +41,7 @@ mod CINK-SYNTAX is protecting PL-INT + PL-BOOL + PL-ID .
     op _<=_ : Exp  Exp -> Exp [prec 37 format (d s s d)] . 
     *** Exp ::= Exp < Exp
     op _>_ : Exp  Exp -> Exp [prec 37 format (d s s d)] . 
+    op _<_ : Exp  Exp -> Exp [prec 37 format (d s s d)] . 
     *** Exp ::= ! Exp
     op !_ :  Exp -> Exp .
     *** Exp ::= Exp && Exp
@@ -47,8 +52,35 @@ mod CINK-SYNTAX is protecting PL-INT + PL-BOOL + PL-ID .
     op _?_:_ : Exp  Exp  Exp -> Exp [prec 39 format (d s s s s d )] . 
     *** Exp ::= Exp = Exp
     op _=_ : Exp  Exp -> Exp [ prec 40 gather (e E) format (d s s d)] .
+    *** Exp ::= Exp[] = Exp
+    op _[_]=_ : Exp Exp Exp -> Exp [ prec 40 ] .
+
+    *** Exp ::= Exp = Exp[]
+    op _=_[_] : Exp Exp Exp -> Exp [ prec 40 ] .
+    *** Exp ::= Exp[] = Exp[]
+    op _[_]=_[_] : Exp Exp Exp Exp -> Exp [ prec 40 ] .
+
+    op _[_]=_[_] : Exp Stmt Exp Stmt -> Exp [ prec 40 ] .
+
+    --- op _[_*_]=_[_] : Exp Exp Exp Exp Exp -> Exp [ prec 40 gather (e E) format (d s s d)] .
+    --- op _[_+_]=_[_] : Exp Exp Exp Exp Exp -> Exp [ prec 40 gather (e E) format (d s s d)] .
+    --- op _[_-_]=_[_] : Exp Exp Exp Exp Exp -> Exp [ prec 40 gather (e E) format (d s s d)] .
+    --- op _[_/_]=_[_] : Exp Exp Exp Exp Exp -> Exp [ prec 40 gather (e E) format (d s s d)] .
+    
+    --- op _[_]=_[_*_] : Exp Exp Exp Exp Exp -> Exp [ prec 40 gather (e E) format (d s s d)] .
+    --- op _[_]=_[_+_] : Exp Exp Exp Exp Exp -> Exp [ prec 40 gather (e E) format (d s s d)] .
+    --- op _[_]=_[_-_] : Exp Exp Exp Exp Exp -> Exp [ prec 40 gather (e E) format (d s s d)] .
+    --- op _[_]=_[_/_] : Exp Exp Exp Exp Exp -> Exp [ prec 40 gather (e E) format (d s s d)] .
+    
+    --- op _[_*_]=_[_*_] : Exp Exp Exp Exp Exp Exp -> Exp [ prec 40 gather (e E) format (d s s d)] .
+    --- op _[_*_]=_[_+_] : Exp Exp Exp Exp Exp Exp -> Exp [ prec 40 gather (e E) format (d s s d)] .
+    --- op _[_*_]=_[_-_] : Exp Exp Exp Exp Exp Exp -> Exp [ prec 40 gather (e E) format (d s s d)] .
+    --- op _[_*_]=_[_/_] : Exp Exp Exp Exp Exp Exp -> Exp [ prec 40 gather (e E) format (d s s d)] .
+    
     *** Exp ::=printf("%d;", Exp)
     op printf("%d;",_) :  Exp -> Exp . 
+    *** Exp ::=printf("%d;", Exp)
+    op printf("%d;",_[_]) :  Exp Exp -> Exp . 
     *** Exp ::=scanf("%d;", & Id)
     op scanf("%d",&_) :  Id -> Exp .
     *** Exp ::= Id ( List{Exp} )

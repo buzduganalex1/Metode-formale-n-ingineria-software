@@ -28,4 +28,8 @@ For using z3 follow https://rise4fun.com/z3/tutorial
 ##### 4.
 ```
     Use v3 to verify the program
+
+    The implications are :
+        1. i > m / 2[2 / i][m + 1 / m]
+        2. n <= m && (n % i == 0 && m % i == 0)
 ```
