@@ -1,14 +1,15 @@
-# Detailed description
+# Project 1 - Buzdugan Alexandu Msd 2
 
-For using z3 follow https://rise4fun.com/z3/tutorial 
+#### The pdf can be found in docs/ProjectDescription.pdf
 
-### Exxercise 1
+### Exercise 1
 
-1.  ```The precondition is that n has to be an integer and > 1```
+1.  Specify the problem as precondition and postcondition:  
+    ```The precondition is that n has to be an integer and > 1```
     
     ```The postcondition is that m integer, m > n, m % i == 0 && n % i ==0```
 
-2.  The program implementation in c is in src and the implementation in maude in          maude/Exercise1.maude
+2.  The program implementation in c is in src and the cink implementation in maude in maude/Exercise1.maude
     ```
     in pl-builtins.maude
     in cink-syntax.maude
@@ -49,11 +50,18 @@ For using z3 follow https://rise4fun.com/z3/tutorial
     ```maude Exercise1.maude```
 
 3.  The tableaux code for our program is in tableaux.maude. 
+    ```
+    red 2pt((n = 5 ; m = n + 1 ; i = 2 ; while (m % i != 0 || n % i != 0) { if ( i > m / 2 ){ m = m + 1 ; i = 2 ; } else { i = i + 1 ; }}), (n <= m && n % i == 0 && m % i == 0)) .
 
+    red 2pt((n = 5 ; m = n + 1 ; i = 2 ; while (m % i != 0 || n % i != 0) { inv( i > m / 2 ); m = m + 1 ; i = 2 ; }), (n <= m && n % i == 0 && m % i == 0)) .
+
+    ```
     To execute it run:
     ```maude Exercise.maude```
 
 4. Use v3 to verify the program
+
+    For using z3 follow https://rise4fun.com/z3/tutorial 
 
 ```
     The implications are :
@@ -138,7 +146,7 @@ For using z3 follow https://rise4fun.com/z3/tutorial
     ```
 
 ### Exercise 3
-1.
+1.  None
         
 2.  Exercise 3 solution implemented with the cink changes to support arrays
     ```

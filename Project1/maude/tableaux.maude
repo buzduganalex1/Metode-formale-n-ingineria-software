@@ -108,12 +108,9 @@ mod TABLEAUX is
   
 endm
 
-***red 2pt((x = y - 1 ; y = x + 1 ;), (x <= y)) . 
-
 red 2pt((n = 5 ; m = n + 1 ; i = 2 ; while (m % i != 0 || n % i != 0) { if ( i > m / 2 ){ m = m + 1 ; i = 2 ; } else { i = i + 1 ; }}), (n <= m && n % i == 0 && m % i == 0)) .
 
 red 2pt((n = 5 ; m = n + 1 ; i = 2 ; while (m % i != 0 || n % i != 0) { inv( i > m / 2 ); m = m + 1 ; i = 2 ; }), (n <= m && n % i == 0 && m % i == 0)) .
-
 
 ***(
 
@@ -125,6 +122,6 @@ red 2pt((x = x + 1 ; while (y <= x) {inv( 0 <= x); x = x - y ;}), (x - y <= 0)) 
 
 ***red 2pt((s = 0 ; i = 1 ; while (i <= n) { inv((i <= n + 1) && (s == ((i - 1) * i / 2))); s = s + i ; i = i + 1 ; }), s == (n * (n + 1) / 2) ) .
 
-*** red 2pt({ x = y - 1 ; y = x + 1 ; }, (x <= y)) .
+***red 2pt({ a[1] = 1 ; x = y - a[1] ; y = x + a[1] ; }, (x <= y)) .
 
 *** red 2pt((if (x <= 0) s = x ; else {}), (0 <= x)) .
