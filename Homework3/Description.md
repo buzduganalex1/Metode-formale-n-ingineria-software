@@ -1,4 +1,4 @@
-Description of IntegerArrayClass
+## Description of IntegerArrayClass
 
 -Developing the class with CodeContracts is quite easy, I've done that like this
 ```
@@ -27,7 +27,10 @@ public class IntegerArray
     {
         Contract.Requires(integerArray != null);
         Contract.Requires(integerArray.Length >= 0);
-
+        Contract.Assume(this.integerArray.Contains(x));
+        Contract.Ensures(this.integerArray != null);
+        Contract.Ensures(this.integerArray.Contains(x));
+        
         var length = integerArray.Length;
 
         var newArray = new int[length + 1];
@@ -46,10 +49,7 @@ public class IntegerArray
 
         integerArray = newArray;
 
-        Contract.Assume(this.integerArray.Contains(x));
-        Contract.Ensures(this.integerArray != null);
         Contract.Ensures(length > 0);
-        Contract.Ensures(this.integerArray.Contains(x));
         Contract.Ensures(this.integerArray.Length > length);
     }
 
@@ -57,6 +57,9 @@ public class IntegerArray
     {
         Contract.Requires(integerArray != null);
         Contract.Requires(integerArray.Length > 0);
+        Contract.Ensures(this.integerArray != null);
+        Contract.Assume(!this.integerArray.Contains(x));
+        Contract.Ensures(!this.integerArray.Contains(x));
 
         var length = integerArray.Length;
 
@@ -76,10 +79,7 @@ public class IntegerArray
         }
 
         integerArray = newArray;
-
-        Contract.Ensures(this.integerArray != null);
-        Contract.Assume(!this.integerArray.Contains(x));
-        Contract.Ensures(!this.integerArray.Contains(x));
+        
         Contract.Ensures(this.integerArray.Length < length);
     }
 
@@ -106,5 +106,29 @@ In case of deletion of an element we want it to be an int and our array to be in
 The loop invariants are conditions that are true for each iteration in a loop, we can check this by using *Contract.Assert* command.
 In our case for addition we want our array to keep being != null and our iterators to be positive. The same for deletion
 
-Inline-style: 
-![alt text](C:\Users\abuzduga\Desktop\Example1.png "Logo Title Text 1")
+[logo]: https://raw.githubusercontent.com/buzduganalex1/Metode-formale-n-ingineria-software/master/Homework3/Example1.png "Logo Title Text 2"
+
+### Dafny ###
+
+```
+class IntegerArray{
+  var integerArray: set<int>;
+  
+  method addElem(x: int)
+  requires integerArray != {}
+  requires x > 0
+  ensures integerArray != {}
+  {
+    var length := |integerArray|;
+    
+    var newArray : set<int>;
+  }
+  
+  method delElem(x: int)
+  requires integerArray != {}
+  {
+  } 
+}
+```
+
+With Dafny I've tried to describe the class, describe a simple postcondition and precondition but failed to do operations on sets.
