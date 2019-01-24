@@ -120,8 +120,32 @@ It is worth noting that even the MOP solution can be overly conservative, becaus
     <img src="Exercise2Step5.jpg" alt="drawing" width="700  "/>
 
 ### Exercise 3
+Design a Uninitialized Variable Analysis that determines, at each
+program point, whether a variable used at that point is not initialized. You may
+use Constant Propagation Analysis as inspiration source.
+1. Define the partial ordered set of the values for variables.
+2. Define the analysis information domain (D, v) and describe how it can be
+used to decide whether a variable used at a program point is not initialized.
+3. Decide whether the analysis is forward or backward.
+4. Define the transfer function.
+5. Apply it (using the fixed point approach or the MOP approach) on the
+following program:
+
+```c
+x = 1;
+y = -1;
+if (x * y < 0) z = 1;
+if (z > 0) y = w;
+u = y;
+```
+
+By following the live variable analysis for the final exercise I defined the labels, created CFG ,calculated the kill/gen functions and defined the transfer function.
+
+<img src="Exercise3.jpg" alt="drawing" width="700  "/>
+
+Deciding if the analysis is forward or backard we have the following definitions:
 
 - Forward problems (like constant propagation) where the information at a node n summarizes what can happen on paths from "enter" to n.
 - Backward problems (like live-variable analysis), where the information at a node n summarizes what can happen on paths from n to "exit".
 
-<img src="Exercise3.jpg" alt="drawing" width="700  "/>
+Looking at those we can deduce that an unitialized variable analysis is a forward problem because we want to go from end to the node where the variable is initialized. If we cannot find such node then our variable was not initialized.
