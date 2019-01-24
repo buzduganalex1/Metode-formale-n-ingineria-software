@@ -36,35 +36,92 @@ else
 - Step 3
 
    After defining the equation system we can apply the algorithm based on Knaster-Tarski to find the solution.
-   
+
    <img src="Exercise1Variables.jpg" alt="drawing" width="700  "/>
 
 ### Exercise 2
 
+The goal is to do the constant propagation analysis on the follow-
+ing program:
+
+```c
+1   if (x < 0)
+    {
+2       a = 1;
+3       if (y > 0)
+        {
+4           b = 2;
+5           c = a + b;
+        }
+        else
+        {
+6           b = 3;
+7           c = b - a;
+        }
+    }
+    else
+    {
+8       b = 1;
+9       c = 2;
+10      if (y < 0)
+11          a = b + c;
+        else
+12          a = 6 - (b+c);
+    }
+```
+
+1. Build the control flow graph.
+2. Define the state.
+3. Define the transfer function.
+4. Apply the MOP algorithm.
+
+The goal of constant propagation is to determine where in the program variables are guaranteed to have constant values. More specifically, the information computed for each CFG node n is a set of pairs, each of the form (variable, value). If we have the pair (x, v) at node n, that means that x is guaranteed to have value v whenever n is reached during program execution.
+
+The MOP solution (for a forward problem) for each CFG node n is defined as follows:
+
+For every path "enter → ... → n", compute the dataflow fact induced by that path (by applying the dataflow functions associated with the nodes on the path to the initial dataflow fact).
+Combine the computed facts (using the combining operator, ⌈⌉ ).
+The result is the MOP solution for node n.
+
+It is worth noting that even the MOP solution can be overly conservative, because not all paths in the CFG are executable. For example, a program may include a predicate that always evaluates to false. Another way that non-executable paths can arise is when two predicates on the path are not independent.
+
 - Step 1
+    
+    In the first step we are labeling the commands in the program.
 
     <img src="Exercise2Step1.jpg" alt="drawing" width="700  "/>
 
 - Step 2
+    
+    After that we build the flow graph and define the values of each instantiated variable for each step. This helps us to define the state easier. On the same page we define the state for each variable and define the kill and gen functions in case we will need them.
+
+    I thought i might need them to calculate the transfer functions but i used the states instead.
 
     <img src="Exercise2Step2.jpg" alt="drawing" width="700  "/>
 
 - Step 3
    
-    <img src="Exercise2Step3.jpg" alt="drawing" width="700  "/>
+    For each node we find the path from end to it.
+
+    <img src="Exercise2Paths.jpg" alt="drawing" width="700  "/>
 
 - Step 4
 
-    <img src="Exercise2Step4.jpg" alt="drawing" width="700  "/>
+    We start applying the mop for each path and obtaining the solution
+
+    <img src="Exercise2Step3.jpg" alt="drawing" width="700  "/>
 
 - Step 5
 
-    <img src="Exercise2Step5.jpg" alt="drawing" width="700  "/>
+    <img src="Exercise2Step4.jpg" alt="drawing" width="700  "/>
 
 - Step 6
 
-    <img src="Exercise2LastStep.jpg" alt="drawing" width="700  "/>
+    <img src="Exercise2Step5.jpg" alt="drawing" width="700  "/>
 
 ### Exercise 3
+
+- Forward problems (like constant propagation) where the information at a node n summarizes what can happen on paths from "enter" to n.
+- Backward problems (like live-variable analysis), where the information at a node n summarizes what can happen on paths from n to "exit".
 
 <img src="Exercise3.jpg" alt="drawing" width="700  "/>
