@@ -5,11 +5,11 @@
 
 - Step 1
 
-    <img src="Exercise1FlowGraph.jpg" alt="drawing" width="700  "/>
+    <img src="Exercise1Functions.jpg" alt="drawing" width="700  "/>
 
 - Step 2
 
-    <img src="Exercise1Functions.jpg" alt="drawing" width="700  "/>
+    <img src="Exercise1FlowGraph.jpg" alt="drawing" width="700  "/>
 
 - Step 3
    
